@@ -1,7 +1,7 @@
 import pandas as pd
+import os
 
-
-def get_dataset(path='src\data\datatran2024.csv'):
+def get_dataset(path=None):
     """
     Load the dataset from the given path
     
@@ -13,7 +13,11 @@ def get_dataset(path='src\data\datatran2024.csv'):
     pd.DataFrame
         The dataset loaded as a pandas DataFrame
     """
-    return pd.read_csv(path, sep=';', encoding='latin1')
+    if path is None:
+        path = os.path.join('src', 'data', 'datatran2024.csv')
+    # Construir o caminho do arquivo de forma independente do sistema operacional
+    full_path = os.path.join(os.getcwd(), path)
+    return pd.read_csv(full_path, sep=';', encoding='latin1')
 
 def general_statistics(df):
     """
