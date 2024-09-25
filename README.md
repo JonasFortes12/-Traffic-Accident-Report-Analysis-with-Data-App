@@ -7,13 +7,13 @@ Este aplicativo foi desenvolvido em **Streamlit** para explorar e analisar os da
 O aplicativo tem três páginas principais:
 
 
-### **Página de Resumo do Dataset**
+### **🗂️ Página de Resumo do Dataset**
    - Exibe um resumo dos dados brutos do Boletim de Acidente de Trânsito.
    - Principais funcionalidades:
      - Visualização de amostras dos dados.
      - Exibição da descrição do dataset, como número de linhas e colunas, tipos de dados e valores nulos.
    
-### **Página de Estatísticas Gerais**
+### **📊 Página de Estatísticas Gerais**
    - Fornece uma visão detalhada das estatísticas dos acidentes.
    - Funcionalidades principais:
      - Visualização das causas mais comuns de acidentes.
@@ -21,7 +21,7 @@ O aplicativo tem três páginas principais:
      - Tipos mais frequentes de acidentes.
      - Gráficos para análise comparativa.
 
-### **Página de Resultados e Predições**
+### **🎯 Página de Resultados e Predições**
    - Analisa os resultados das predições feitas sobre os dados históricos de acidentes.
    - Funcionalidades principais:
      - ...
