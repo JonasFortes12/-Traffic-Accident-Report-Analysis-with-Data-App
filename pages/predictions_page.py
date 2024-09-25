@@ -5,8 +5,8 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from src.data.statistics import get_dataset
 from src.models.results import polynomial_regression_victims
 
-st.markdown("# Models Results 🎯")
-st.sidebar.markdown("# Models Results 🎯")
+st.markdown("# Resultados dos Modelos 🎯")
+st.sidebar.markdown("# Resultados dos Modelos 🎯")
 
 # Criação das abas
 tab1, tab2, tab3 = st.tabs(["Regressão Veículo x Vítimas", "Modelo 2", "Modelo 3"])

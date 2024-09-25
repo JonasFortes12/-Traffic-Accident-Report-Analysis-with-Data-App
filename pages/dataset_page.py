@@ -4,8 +4,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 
-st.markdown("# Dataset Summary 🗂️")
-st.sidebar.markdown("# Dataset Summary 🗂️")
+st.markdown("# Resumo do Dataset 🗂️")
+st.sidebar.markdown("#  Resumo do Dataset 🗂️")
 
 DATA_PATH = os.path.join(os.getcwd(), os.path.join('src', 'data', 'datatran2024.csv'))
 
