@@ -31,7 +31,8 @@ with tab1:
         if model and poly:
             X_new = poly.transform(np.array([[veiculos]]))
             prediction = model.predict(X_new)
-            st.write(f'Previsão de vítimas para {veiculos} veículos: {prediction[0]:.2f}')
+            st.success(f'Previsão da média de vítimas: {prediction[0]:.2f}')
+
 
 # Conteúdo da aba 2
 with tab2:

@@ -7,6 +7,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 import io
 
 
+
 def polynomial_regression_victims(datatran, degree=12):
     """
     Função que realiza a regressão polinomial e plota a relação entre número de veículos e a média de vítimas totais.
@@ -58,8 +59,8 @@ def polynomial_regression_victims(datatran, degree=12):
     mse = mean_squared_error(y_grouped, y_pred)
     mae = mean_absolute_error(y_grouped, y_pred)
 
-    st.write(f"Erro Quadrático Médio (MSE): {mse:.4f}")
-    st.write(f"Erro Absoluto Médio (MAE): {mae:.4f}")
+    st.info(f"Erro Quadrático Médio (MSE): {mse:.4f}")
+    st.info(f"Erro Absoluto Médio (MAE): {mae:.4f}")
 
     # Prevendo valores para um range contínuo de "veiculos" para suavizar o gráfico
     X_range = np.linspace(X_grouped['veiculos'].min(), X_grouped['veiculos'].max(), 100).reshape(-1, 1)
@@ -84,24 +85,3 @@ def polynomial_regression_victims(datatran, degree=12):
     
     return model, poly, buf  # Retornando o modelo, o polinômio e o buffer da figura
 
-
-def predict_victims(model, poly, veiculos):
-    """
-    Função para prever o número médio de vítimas totais com base no número de veículos.
-
-    Parâmetros:
-    - model (LinearRegression): O modelo de regressão polinomial treinado.
-    - poly (PolynomialFeatures): O transformador de características polinomiais utilizado para treinar o modelo.
-    - veiculos (float ou array-like): Número de veículos para a qual se deseja fazer a predição.
-
-    Retorna:
-    - float: A média prevista de vítimas totais para o número de veículos fornecido.
-    """
-    # Transformando o valor de entrada
-    veiculos_array = pd.DataFrame(veiculos, columns=['veiculos'])  # Usando DataFrame com nome de coluna
-    veiculos_poly = poly.transform(veiculos_array)  # Transformando para características polinomiais
-
-    # Fazendo a predição
-    predicted_victims = model.predict(veiculos_poly)
-
-    return predicted_victims
