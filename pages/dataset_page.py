@@ -2,13 +2,14 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 st.markdown("# Dataset ❄️")
 st.sidebar.markdown("# Dataset ❄️")
 
-DATA_URL = '../Traffic-Accident-Report-Analysis-with-Data-App/src/data/datatran2024.csv'
+DATA_PATH = os.path.join(os.getcwd(), os.path.join('src', 'data', 'datatran2024.csv'))
 
-df = pd.read_csv(DATA_URL, encoding='latin1', sep=';')
+df = pd.read_csv(DATA_PATH, encoding='latin1', sep=';')
 lowercase = lambda x: str(x).lower()
 df.rename(lowercase, axis='columns', inplace=True)
 
