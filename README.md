@@ -24,6 +24,7 @@ O aplicativo tem três páginas principais:
 ### **🎯 Página de Resultados e Predições**
    - Analisa os resultados das predições feitas sobre os dados históricos de acidentes.
    - Funcionalidades principais:
-     - ...
+     - Regressão Veículo x Vítimas
+     - Classificação de Acidentes
    
 
