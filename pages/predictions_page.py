@@ -1,15 +1,21 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 from src.data.statistics import get_dataset
 from src.models.results import polynomial_regression_victims
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+import plotly.express as px
+import plotly.graph_objects as go
 
-st.markdown("# Models Results 🎯")
-st.sidebar.markdown("# Models Results 🎯")
+
+st.markdown("# Resultados dos Modelos 🎯")
+st.sidebar.markdown("# Resultados dos Modelos 🎯")
 
 # Criação das abas
-tab1, tab2, tab3 = st.tabs(["Regressão Veículo x Vítimas", "Modelo 2", "Modelo 3"])
+tab1, tab2 = st.tabs(["Regressão Veículo x Vítimas", "Classificação de Acidentes"])
 
 # Conteúdo da aba 1
 with tab1:
@@ -36,16 +42,126 @@ with tab1:
 
 # Conteúdo da aba 2
 with tab2:
-    st.subheader("Resultados do Modelo 2")
-    st.write("Aqui você pode incluir informações sobre o segundo modelo.")
-    # Exemplo de gráfico
-    # st.bar_chart(data2)
+    st.subheader("Previsão de Classificação de Acidentes")
+ 
+    def fazer_predicao(model, nova_entrada_valores, datatran_copy, label_encoders, label_encoder):
+        # Transformando a nova entrada
+        nova_entrada = pd.DataFrame(nova_entrada_valores)
 
-# Conteúdo da aba 3
-with tab3:
-    st.subheader("Resultados do Modelo 3")
-    st.write("Aqui você pode incluir informações sobre o terceiro modelo.")
-    # Exemplo de gráfico
-    # st.scatter_chart(data3)
+        # Aplicando Label Encoding na nova entrada
+        for coluna in label_encoders.keys():
+            nova_entrada[coluna] = label_encoders[coluna].transform(nova_entrada[coluna])
 
-# Lembre-se de substituir os comentários de exemplo por seus próprios dados e visualizações.
+        # Fazendo a predição para a nova entrada
+        nova_predicao = model.predict(nova_entrada)
+        nova_predicao_categ = label_encoder.inverse_transform(nova_predicao)
+
+        # Definindo as cores para cada classe
+        color_map = {
+            label_encoder.classes_[0]: 'red', 
+            label_encoder.classes_[1]: 'orange', 
+            label_encoder.classes_[2]: 'green'
+        }
+        
+        nova_entrada['classificacao_predita'] = nova_predicao_categ[0]
+        nova_entrada['color'] = 'blue'  # A cor azul é atribuída à nova entrada
+
+        # Convertendo a nova entrada de volta para categórica
+        for coluna in label_encoders.keys():
+            nova_entrada[coluna] = label_encoders[coluna].inverse_transform(nova_entrada[coluna])
+
+        # Fazendo predições para todas as linhas do DataFrame original (datatran_copy)
+        X_todas = datatran_copy[['dia_semana', 'fase_dia', 'uf']]
+        y_pred_todas = model.predict(X_todas)
+
+        # Adicionando as predições ao DataFrame original
+        datatran_copy['classificacao_predita'] = label_encoder.inverse_transform(y_pred_todas)
+
+        # Convertendo as features de volta para categórico
+        for coluna in label_encoders.keys():
+            datatran_copy[coluna] = label_encoders[coluna].inverse_transform(datatran_copy[coluna])
+
+        # Adicionando as cores com base nas predições
+        datatran_copy['color'] = datatran_copy['classificacao_predita'].map(color_map)
+
+        # Adicionando a nova entrada ao DataFrame original
+        datatran_copy = pd.concat([datatran_copy, nova_entrada], ignore_index=True)
+
+        # Criando um gráfico 3D interativo com todas as predições
+        fig = px.scatter_3d(
+            datatran_copy,
+            x='dia_semana',
+            y='fase_dia',
+            z='uf',
+            color='classificacao_predita',
+            color_discrete_map=color_map,
+            labels={'classificacao_predita': 'Classificação do Acidente'},
+            title='Classificação de Acidentes em 3D'
+        )
+
+        # Adicionando um ponto azul para a nova entrada como um traço separado
+        fig.add_trace(go.Scatter3d(
+            x=nova_entrada['dia_semana'],
+            y=nova_entrada['fase_dia'],
+            z=nova_entrada['uf'],
+            mode='markers+text',
+            marker=dict(size=10, color='blue'),
+            text=nova_entrada['classificacao_predita'],
+            textposition='top center',
+            name='Valor predito'
+        ))
+
+        # Exibindo a classificação predita no console
+        st.info(f'Classificação predita para a nova entrada: {nova_predicao_categ[0]}')
+
+        # Exibindo o gráfico
+        st.plotly_chart(fig)
+
+        return datatran_copy  # Retornando o DataFrame atualizado
+        
+    # Entradas do usuário
+    dia_semana = st.selectbox("Selecione o dia da semana", ['segunda feira', 'terça feira', 'quarta feira', 'quinta feira', 'sexta feira', 'sábado', 'domingo'])
+    fase_dia = st.selectbox("Selecione a fase do dia", ['Amanhecer', 'Anoitecer', 'Pleno dia', 'Plena Noite'])
+    
+    uf = st.selectbox("Selecione o estado (UF)", ['ES', 'PI', 'BA', 'SE', 'MT', 'MG', 'SP', 'PR', 'MS', 'RS', 'PA', 'GO', 'RJ', 'PB',
+                        'MA', 'SC', 'PE', 'TO', 'AL', 'RO', 'CE', 'RN', 'DF', 'AM', 'AC', 'RR', 'AP'])
+
+    # Estrutura de dados da nova entrada
+    nova_entrada_valores = {
+        'dia_semana': [dia_semana],
+        'fase_dia': [fase_dia],
+        'uf': [uf]
+    }
+
+    # Carregando os dados e treinando o modelo (exemplo)
+    datatran_copy = get_dataset()  # Função para carregar os dados
+    datatran_copy['dia_semana'] = datatran_copy['dia_semana'].replace({'segunda-feira': 'segunda feira', 'terça-feira': 'terça feira', 'quarta-feira': 'quarta feira',
+                                                         'quinta-feira': 'quinta feira', 'sexta-feira': 'sexta feira'})
+    
+    
+    label_encoders = {}
+    for column in ['dia_semana', 'fase_dia', 'uf']:
+        le = LabelEncoder()
+        datatran_copy[column] = le.fit_transform(datatran_copy[column])
+        label_encoders[column] = le
+
+    # Convertendo 'classificacao_acidente' usando Label Encoding
+    label_encoder = LabelEncoder()
+    datatran_copy['classificacao_acidente'] = label_encoder.fit_transform(datatran_copy['classificacao_acidente'])
+
+    # Definindo as features (X) e o alvo (y)
+    X = datatran_copy[['dia_semana', 'fase_dia', 'uf']]
+    y = datatran_copy['classificacao_acidente']
+
+    # Dividindo os dados em conjuntos de treinamento e teste
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Treinando o modelo RandomForest
+    model = RandomForestClassifier(random_state=42)
+    model.fit(X_train, y_train)
+
+    
+    # Botão para fazer a predição
+    if st.button("Fazer Predição"):
+        # Realizando a predição e atualizando o DataFrame
+        datatran_copy = fazer_predicao(model, nova_entrada_valores, datatran_copy, label_encoders, label_encoder)

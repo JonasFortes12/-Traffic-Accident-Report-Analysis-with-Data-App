@@ -1,5 +1,8 @@
 import pandas as pd
 import os
+import folium
+from folium.plugins import HeatMap
+from streamlit_folium import st_folium
 
 def get_dataset(path=None):
     """
@@ -201,3 +204,53 @@ def road_type(df):
     type_df.columns = ['Road Type', 'Frequency']
     
     return type_df
+
+# Função para criar o mapa
+def create_heatmap(datatran):
+    
+    colunas = [
+        'dia_semana',
+        'uf',
+        'municipio',
+        'causa_acidente',
+        'tipo_acidente',
+        'classificacao_acidente',
+        'fase_dia',
+        'sentido_via',
+        'condicao_metereologica',
+        'tipo_pista',
+        'tracado_via',
+        'uso_solo',
+        'regional',
+        'delegacia',
+        'uop',
+        'km',
+        'latitude',
+        'longitude'
+    ]
+     # Converter colunas para numérico, forçando erros para NaN
+    
+    # Remover linhas com NaN nas colunas de latitude e longitude
+    datatran = datatran.dropna(subset=['latitude', 'longitude'])
+    
+    for coluna in colunas:
+        if coluna in ['km', 'latitude', 'longitude']:
+            # Converte vírgulas para pontos
+            datatran[coluna] = datatran[coluna].str.replace(',', '.').astype(float)
+        else:
+            datatran[coluna] = datatran[coluna].str.lower()
+    
+    
+    datatran['latitude'] = pd.to_numeric(datatran['latitude'], errors='coerce')
+    datatran['longitude'] = pd.to_numeric(datatran['longitude'], errors='coerce')
+           
+    
+    
+    # Criação do mapa
+    mapa = folium.Map(location=[datatran['latitude'].mean(), datatran['longitude'].mean()], zoom_start=6)
+
+    # Adicionando os pontos
+    heat_data = [[row['latitude'], row['longitude']] for index, row in datatran.iterrows()]
+    HeatMap(heat_data).add_to(mapa)
+
+    return mapa

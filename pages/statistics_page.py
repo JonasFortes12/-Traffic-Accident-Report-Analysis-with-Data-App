@@ -1,77 +1,77 @@
 import streamlit as st
 from src.data.statistics import *
 
-st.markdown("# Estatistics 📊")
-st.sidebar.markdown("# Estatistics 📊")
+st.markdown("# Estatísticas 📊")
+st.sidebar.markdown("# Estatísticas 📊")
 
-# Load your dataset
+# Carregar seu dataset
 df = get_dataset()
 
-
-
 # ------------------------------------------------
-st.title('General Traffic Accident Statistics')
+st.title('Estatísticas Gerais de Acidentes de Trânsito')
 
-# Call the general_statistics function to get the data
+# Chamar a função general_statistics para obter os dados
 general_stats = general_statistics(df)
 
-st.metric("Total Accidents", general_stats['Total Accidents'])
-st.metric("Total Deaths", general_stats['Total Deaths'])
-st.metric("Total Minor Injuries", general_stats['Total Minor Injuries'])
-st.write(f"Dataset Time Period: {general_stats['Dataset Time Period']}")
-st.metric("Fatality Rate (%)", general_stats['Fatality Rate (%)'])
-
-
+st.metric("Total de Acidentes", general_stats['Total Accidents'])
+st.metric("Total de Mortes", general_stats['Total Deaths'])
+st.metric("Total de Feridos Leves", general_stats['Total Minor Injuries'])
+st.write(f"Período do Dataset: {general_stats['Dataset Time Period']}")
+st.metric("Taxa de Fatalidade (%)", general_stats['Fatality Rate (%)'])
 
 # ------------------------------------------------
-st.title('Accident Severity Statistics')
+st.title('Estatísticas de Severidade dos Acidentes')
 
-# Get accident severity statistics
+# Obter estatísticas de severidade de acidentes
 severity_df = accident_severity(df)
 
-# Plotting the severity levels using Streamlit
+# Plotando os níveis de severidade usando Streamlit
 st.bar_chart(severity_df.set_index('Severity'))
 
-
-
 # ------------------------------------------------
-st.title("Traffic Accident Analysis")
+st.title("Análise de Acidentes de Trânsito")
 
-# Get statistics
+# Obter estatísticas
 cause_df = main_causes(df)
 classification_df = accident_classification(df)
 type_df = common_accident_types(df)
 
-# Main Causes
-st.subheader("Main Causes of Accidents")
+# Principais Causas
+st.subheader("Principais Causas dos Acidentes")
 st.bar_chart(cause_df.set_index('Cause'))
 
-# Classification of Accidents
-st.subheader("Accident Classification")
+# Classificação dos Acidentes
+st.subheader("Classificação dos Acidentes")
 st.bar_chart(classification_df.set_index('Classification'))
 
-# Common Types of Accidents
-st.subheader("Common Types of Accidents")
+# Tipos Comuns de Acidentes
+st.subheader("Tipos Comuns de Acidentes")
 st.bar_chart(type_df.set_index('Accident Type'))
 
-
-
 # ------------------------------------------------
-st.title("Environmental Conditions Analysis")
+st.title("Análise das Condições Ambientais")
 
-# Get environmental condition statistics
+# Obter estatísticas das condições ambientais
 weather_df = weather_conditions(df)
 direction_df = road_direction(df)
 type_df = road_type(df)
 
-# Weather Conditions
-st.subheader("Weather Conditions")
+# Condições Meteorológicas
+st.subheader("Condições Meteorológicas")
 st.bar_chart(weather_df.set_index('Weather Condition'))
 
-# Road Direction
-st.subheader("Road Direction")
+# Direção da Estrada
+st.subheader("Direção da Estrada")
 st.bar_chart(direction_df.set_index('Road Direction'))
 
-# Road Type
-st.subheader("Road Type")
+# Tipo de Estrada
+st.subheader("Tipo de Estrada")
 st.bar_chart(type_df.set_index('Road Type'))
+
+# ------------------------------------------------
+
+mapa = create_heatmap(df)
+
+# Exibindo o mapa no Streamlit
+st.subheader("Mapa de Calor de Acidentes de Trânsito")
+st_folium(mapa, width=725)
