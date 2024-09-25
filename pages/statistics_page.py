@@ -1,8 +1,8 @@
 import streamlit as st
 from src.data.statistics import *
 
-st.markdown("# Estatistics ❄️")
-st.sidebar.markdown("# Estatistics ❄️")
+st.markdown("# Estatistics 📊")
+st.sidebar.markdown("# Estatistics 📊")
 
 # Load your dataset
 df = get_dataset()
